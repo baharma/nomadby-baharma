@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('front-end.include.succes');
+Route::namespace('frontAnd')->group(function () {
+    Route::get('/', 'HomeController@index')
+        ->name('home');
+    Route::get('/detail', 'DetailsController@index')
+        ->name('detail');
+    Route::get('/checkout', 'CheckoutController@index')
+        ->name('chekout');
+    Route::get('/succes', 'SuccesController@index')
+        ->name('succes');
 });
+
+Auth::routes();
+
+
+
+
+Route::prefix('admin')
+    ->middleware(['auth', 'admin'])
+    ->group(function () {
+        Route::get('/', 'HomeController@index')->name('home');
+    });
