@@ -25,7 +25,7 @@ Route::namespace('frontAnd')->group(function () {
         ->name('succes');
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 
 
@@ -33,5 +33,8 @@ Auth::routes();
 Route::prefix('admin')
     ->middleware(['auth', 'admin'])
     ->group(function () {
-        Route::get('/', 'HomeController@index')->name('home');
+        Route::get('/', 'HomeController@index')->name('dashboard');
+        Route::resource('travel-package', 'TravelPackgeController');
+        Route::resource('gallery', 'GalleryController');
+        Route::resource('transaction', 'TransactionController');
     });

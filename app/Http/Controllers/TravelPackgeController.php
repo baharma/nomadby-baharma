@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\TravelPackge;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Http\Requests\Admin\TravelPackageRequest;
 
 class TravelPackgeController extends Controller
 {
@@ -14,7 +16,11 @@ class TravelPackgeController extends Controller
      */
     public function index()
     {
-        //
+        $item  = TravelPackge::orderBy('created_at', 'desc')->paginate('10');
+        return view(
+            'admin.include.paketTravel.index',
+            compact('item')
+        );
     }
 
     /**
@@ -24,7 +30,7 @@ class TravelPackgeController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.include.paketTravel.create');
     }
 
     /**
@@ -33,9 +39,18 @@ class TravelPackgeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TravelPackageRequest $request)
     {
-        //
+        $item = $request->all();
+        $item['slug'] = Str::slug($request->title);
+        try {
+            TravelPackge::create($item);
+
+            return redirect()->route('travel-package.index')->with('message', 'Data created !');
+        } catch (\Exception $e) {
+
+            return redirect()->back();
+        }
     }
 
     /**
@@ -55,9 +70,10 @@ class TravelPackgeController extends Controller
      * @param  \App\TravelPackge  $travelPackge
      * @return \Illuminate\Http\Response
      */
-    public function edit(TravelPackge $travelPackge)
+    public function edit(TravelPackge $travelPackge, $id)
     {
-        //
+        $items = TravelPackge::find($id);
+        return view('admin.include.paketTravel.edit', ['items' => $items]);
     }
 
     /**
@@ -67,9 +83,16 @@ class TravelPackgeController extends Controller
      * @param  \App\TravelPackge  $travelPackge
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TravelPackge $travelPackge)
+    public function update(TravelPackageRequest $request, TravelPackge $travelPackge, $id)
     {
-        //
+        $data = $request->all();
+        $data['slug'] = Str::slug($request->title);
+
+        $item = TravelPackge::findOrFail($id);
+
+        $item->update($data);
+
+        return redirect()->route('travel-package.index');
     }
 
     /**
@@ -78,8 +101,10 @@ class TravelPackgeController extends Controller
      * @param  \App\TravelPackge  $travelPackge
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TravelPackge $travelPackge)
+    public function destroy(TravelPackge $travelPackge, $id)
     {
-        //
+        $item = TravelPackge::find($id)->delete();
+        return redirect()->back()
+            ->with('error', 'Error during the creation!')->with('message', 'Data delete !');
     }
 }
