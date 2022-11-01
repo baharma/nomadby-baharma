@@ -12,7 +12,7 @@
     <p>
       Lets Make your experien moment never <br> forget went you see more
     </p>
-    <a href="#" class="btn btn-get-stated px-4 mt-4">
+    <a href="#popular" class="btn btn-get-stated px-4 mt-4">
       Get Started
     </a>
   </header>
@@ -59,72 +59,24 @@
     <section class="section-popular-content" id="popularContent">
       <div class="container">
         <div class="section-popular-travel row justify-content-center">
+          @foreach ($items as $item)
           <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="card-travel text-center d-flex flex-column" style="
-              background-image: url('{{('nomads-desaint-main/img/kota-denpasar-header.jpg')}}');">
+              background-image: url('{{( $item->galleries->count() ? url('public/Image/'.$item->galleries->first()->image):'')}}');">
               <div class="travel-country">
-                Indonesia
+                {{$item->location}}
               </div>
               <div class="travel-location">
-                Denpasar, Renon
+                {{$item->title}}
               </div>
               <div class="travel-button mt-auto">
-                <a href="#" class="btn btn-travel-details px-4">
+                <a href="{{route('detail',$item->slug)}}" class="btn btn-travel-details px-4">
                   View Details
                 </a>
               </div>
             </div>
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="card-travel text-center d-flex flex-column" style="
-              background-image: url('{{asset('nomads-desaint-main/img/Kuta_Beach.jpg')}}');">
-              <div class="travel-country">
-                Indonesia
-              </div>
-              <div class="travel-location">
-                Kuta, Pantai Kuta
-              </div>
-              <div class="travel-button mt-auto">
-                <a href="#" class="btn btn-travel-details px-4">
-                  View Details
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="card-travel text-center d-flex flex-column" style="
-              background-image: url('{{asset('nomads-desaint-main/img/nusadua.jpg')}}');">
-              <div class="travel-country">
-                Indonesia
-              </div>
-              <div class="travel-location">
-                Nusa Dua, Pantai Nusa Dua
-              </div>
-              <div class="travel-button mt-auto">
-                <a href="#" class="btn btn-travel-details px-4">
-                  View Details
-                </a>
-              </div>
-            </div>
-
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="card-travel text-center d-flex flex-column" style="
-              background-image: url('{{asset('nomads-desaint-main/img/pura-ulun-danu-bratan-temple-bali-indonesia_30824-288.jpg')}}');">
-              <div class="travel-country">
-                Indonesia
-              </div>
-              <div class="travel-location">
-                Bedugul, danau Beratan
-              </div>
-              <div class="travel-button mt-auto">
-                <a href="#" class="btn btn-travel-details px-4">
-                  View Details
-                </a>
-              </div>
-            </div>
-
-          </div>
+          </div>   
+          @endforeach
         </div>
       </div>
     </section>

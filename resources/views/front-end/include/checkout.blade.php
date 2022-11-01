@@ -24,9 +24,19 @@
             <div class="row">
                 <div class="col-lg-8 pl-lg-0">
                     <div class="card card-details" style="padding: 30px ;border-radius: 11px;">
-                        <h2>Nusa Dua</h2>
+                        @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                        <h2>Who is Going</h2>
                         <p>
-                            Bali
+                            Trip to {{$item->travel_package->title}},
+                            {{$item->travel_package->location}}
                         </p>
 
                         <div class="attendee">
@@ -42,47 +52,51 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><img src="https://picsum.photos/200" alt="" height="60"></td>
-                                        <td class="align-middle">Baharma</td>
-                                        <td class="align-middle">CN</td>
-                                        <td class="align-middle">N/A</td>
-                                        <td class="align-middle">Active</td>
-                                        <td class="align-middle">
-                                            <img src="https://cdn3.iconfinder.com/data/icons/faticons/32/remove-01-512.png"
-                                                alt="" width="30">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><img src="https://picsum.photos/200" alt="" height="60"></td>
-                                        <td class="align-middle">Baharma</td>
-                                        <td class="align-middle">CN</td>
-                                        <td class="align-middle">N/A</td>
-                                        <td class="align-middle">Active</td>
-                                        <td class="align-middle">
-                                            <img src="https://cdn3.iconfinder.com/data/icons/faticons/32/remove-01-512.png"
-                                                alt="" width="30">
-                                        </td>
-                                    </tr>
+                           @forelse($item->details as $detail)
+                           <tr>
+                            <td><img src="https://ui-avatars.com/api/?name={{ $detail->username }}" height="60" class="rounded-circle"/></td>
+                            <td class="align-middle">{{$detail->username}}</td>
+                            <td class="align-middle">{{$detail->nationality}}</td>
+                            <td class="align-middle"> {{ $detail->is_visa ? '30 Days' : 'N/A' }}</td>
+                            <td class="align-middle"> {{ \Carbon\Carbon::createFromDate($detail->doe_passport) > \Carbon\Carbon::now() ? 'Active' : 'Inactive' }}</td>
+                            <td class="align-middle">
+                                < <a href="{{ route('checkout-remove', $detail->id) }}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                           @empty
+                           <tr>
+                            <td colspan="6" class="text-center">
+                                No Visitor
+                            </td>
+                        </tr>
+                           @endforelse
+                               
                                 </tbody>
                             </table>
                         </div>
                         <div class="member mt-3">
                             <h2>Add Member</h2>
-                            <form class="form-inline " method="post" action="">
+                            <form class="form-inline" method="post" action="{{ route('checkout-create', $item->id) }}">
+                                @csrf
                                 <div class="row g-3">
                                     <div class="col">
                                         <label for="username" class="sr-only">Name</label>
                                         <input type="text" name="username" class="form-control " id="inputUsername"
-                                            placeholder="Username" />
+                                            placeholder="Username" required/>
                                     </div>
                                     <div class="col">
                                         <label for="nationality" class="sr-only">Name</label>
                                         <input type="text" name="nationality" class="form-control mb-2 mr-sm-2"
-                                            id="inputNationality" placeholder="Nationality" />
+                                            id="inputNationality" placeholder="Nationality"  required/>
                                     </div>
                                     <div class="col">
-                                        <select id="inputState" class="form-select">
+                                        <select id="inputState" class="form-select"
+                                        name="is_visa"
+                                        id="inputVisa"
+                                        class="custom-select mb-2 mr-sm-2"
+                                        required>
                                             <option value="" selected>VISA</option>
                                             <option value="1">30 Days</option>
                                             <option value="0">N/A</option>
@@ -118,26 +132,26 @@
                             <tr>
                                 <th width="50%">Members</th>
                                 <td width="50%" class="text-right">
-                                    2 person
+                                    {{ $item->details->count() }} person
                                 </td>
                             </tr>
                             <tr>
                                 <th width="50%">Additional Visa</th>
                                 <td width="50%" class="text-right">
-                                    $ 190,00
+                                    $ {{ $item->additional_visa }},00
                                 </td>
                             </tr>
                             <tr>
                                 <th width="50%">Sub Total</th>
                                 <td width="50%" class="text-right">
-                                    $ 280,00
+                                    $ {{ $item->travel_package->price }},00 / person
                                 </td>
                             </tr>
                             <tr>
                                 <th width="50%">Total (+Unique)</th>
                                 <td width="50%" class="text-right">
-                                    <span class="text-blue">$ 279,</span>
-                                    <span class="text-orange">33</span>
+                                    <span class="text-blue">$ {{ $item->transaction_total }},</span>
+                                    <span class="text-orange">{{ mt_rand(0,99) }}</span>
                                 </td>
                             </tr>
                         </table>
@@ -173,12 +187,12 @@
                         </div>
                     </div>
                     <div class="join-container d-grid gap-2">
-                        <a href="#" class="btn btn-block btn-join-now mt-3 py-2">
+                        <a href="{{route('checkout-process',$item->id)}}" class="btn btn-block btn-join-now mt-3 py-2">
                             I Have Made Payment
                         </a>
                     </div>
                     <div class="text-center mt-3">
-                        <a href="#" >
+                        <a href="{{route('detail',$item->travel_package->slug)}}" >
                             Cancel Booking
                         </a>
                     </div>

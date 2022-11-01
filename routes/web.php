@@ -17,12 +17,21 @@ use Illuminate\Support\Facades\Route;
 Route::namespace('frontAnd')->group(function () {
     Route::get('/', 'HomeController@index')
         ->name('home');
-    Route::get('/detail', 'DetailsController@index')
+    Route::get('/detail/{slug}', 'DetailsController@index')
         ->name('detail');
-    Route::get('/checkout', 'CheckoutController@index')
-        ->name('chekout');
-    Route::get('/succes', 'SuccesController@index')
-        ->name('succes');
+    Route::middleware((['auth', 'verified']))->group(function () {
+        Route::post('/checkout/{id}', 'CheckoutController@index')
+            ->name('checkout');
+        Route::get('/checkout/{id}', 'CheckoutController@prosess')
+            ->name('checkout-process');
+
+        Route::post('/checkout/create/{detail_id}', 'CheckoutController@create')
+            ->name('checkout-create');
+        Route::get('/checkout/remove/{detail_id}', 'CheckoutController@remove')
+            ->name('checkout-remove');
+        Route::get('/succes/{id}', 'SuccesController@index')
+            ->name('succes');
+    });
 });
 
 Auth::routes(['verify' => true]);
